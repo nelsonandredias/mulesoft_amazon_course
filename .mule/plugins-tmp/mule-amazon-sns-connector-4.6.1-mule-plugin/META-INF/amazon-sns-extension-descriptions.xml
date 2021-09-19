@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension-documentation>
+    <configs>
+        <config name="config">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="defaultTopicArn">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="expirationPolicy">
+                    <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
+                </parameter>
+            </parameters>
+        </config>
+    </configs>
+    <connections>
+        <connection name="basic">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="sessionToken">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="testTopic">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customServiceEndpoint">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="role">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="roleARN">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customStsEndpoint">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="testTopic">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customServiceEndpoint">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+    </connections>
+    <extension name="Amazon SNS">
+        <description><![CDATA[]]></description>
+        <parameters/>
+    </extension>
+    <operations>
+        <operation name="addPermission">
+            <description><![CDATA[Adds a statement to a topic's access control policy, granting access for the specified AWS accounts to the specified actions.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic whose access control policy you wish to modify.]]></description>
+                </parameter>
+                <parameter name="label">
+                    <description><![CDATA[A unique identifier for the new policy statement.]]></description>
+                </parameter>
+                <parameter name="accountIds">
+                    <description><![CDATA[The AWS account IDs of the users (principals) who will be given access to the specified actions. The users must have AWS accounts, but do not need to be signed up for this service.]]></description>
+                </parameter>
+                <parameter name="actionNames">
+                    <description><![CDATA[The action you want to allow for the specified principal(s)]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="confirmSubscription">
+            <description><![CDATA[The confirmSubscription action verifies an endpoint owner's intent to receive messages by validating the token sent to the endpoint by an earlier Subscribe action. If the token is valid, the action creates a new subscription and returns its Amazon Resource Name (ARN). This call requires an AWS signature only when the AuthenticateOnUnsubscribe flag is set to "true".]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic for which you wish to confirm a subscription.]]></description>
+                </parameter>
+                <parameter name="token">
+                    <description><![CDATA[Short-lived token sent to an endpoint during the <code>Subscribe</code> action.]]></description>
+                </parameter>
+                <parameter name="authenticateOnUnsubscribe">
+                    <description><![CDATA[Disallows unauthenticated unsubscribes of the subscription. If the value of this parameter is <code>true</code> and the request has an AWS signature, then only the topic owner and the subscription owner can unsubscribe the endpoint. The unsubscribe action requires AWS authentication.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="createPlatformApplication">
+            <description><![CDATA[Creates a platform application object for one of the supported push notification services, such as APNS and GCM, to which devices and mobile apps may register.]]></description>
+            <parameters>
+                <parameter name="name">
+                    <description><![CDATA[Application name must be made up of only uppercase and lowercase ASCII letters, numbers, underscores, hyphens, and periods, and must be between 1 and 256 characters long.]]></description>
+                </parameter>
+                <parameter name="platform">
+                    <description><![CDATA[The following platforms are supported: ADM (Amazon Device Messaging), APNS (Apple Push Notification Service), APNS_SANDBOX, and GCM (Google Cloud Messaging).]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[The list of attributes.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="createPlatformEndpoint">
+            <description><![CDATA[Creates an endpoint for a device and mobile app on one of the supported push notification services. CreatePlatformEndpoint requires the PlatformApplicationArn that is returned from CreatePlatformApplication.]]></description>
+            <parameters>
+                <parameter name="platformApplicationArn">
+                    <description><![CDATA[PlatformApplicationArn returned from CreatePlatformApplication is used to create an endpoint.]]></description>
+                </parameter>
+                <parameter name="token">
+                    <description><![CDATA[Unique identifier created by the notification service for an app on a device. The specific name for Token will vary, depending on which notification service is being used. For example, when using APNS as the notification service, you need the device token. Alternatively, when using GCM or ADM, the device token equivalent is called the registration ID.]]></description>
+                </parameter>
+                <parameter name="customUserData">
+                    <description><![CDATA[Arbitrary user data to associate with the endpoint. Amazon SNS does not use this data. The data must be in UTF-8 format and less than 2KB.]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[The list of attributes.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="createTopic">
+            <description><![CDATA[The CreateTopic action creates a topic to which notifications can be published. Users can create at most 100 topics]]></description>
+            <parameters>
+                <parameter name="topicName">
+                    <description><![CDATA[The name of the topic you want to create.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteEndpoint">
+            <description><![CDATA[Deletes the endpoint for a device and mobile app from Amazon SNS.]]></description>
+            <parameters>
+                <parameter name="endpointArn">
+                    <description><![CDATA[EndpointArn of endpoint to delete.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deletePlatformApplication">
+            <description><![CDATA[Deletes a platform application object for one of the supported push notification services, such as APNS and GCM.]]></description>
+            <parameters>
+                <parameter name="platformApplicationArn">
+                    <description><![CDATA[PlatformApplicationArn of platform application object to delete.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteTopic">
+            <description><![CDATA[The DeleteTopic action deletes a topic and all its subscriptions. Deleting a topic might prevent some messages previously sent to the topic from being delivered to subscribers. This action is idempotent, so deleting a topic that does not exist does not result in an error.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic you want to delete.]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getEndpointAttributes">
+            <description><![CDATA[Retrieves the endpoint attributes for a device on one of the supported push notification services, such as GCM and APNS.]]></description>
+            <parameters>
+                <parameter name="endpointArn">
+                    <description><![CDATA[EndpointArn for GetEndpointAttributes input.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getPlatformApplicationAttributes">
+            <description><![CDATA[Retrieves the attributes of the platform application object for the supported push notification services, such as APNS and GCM.]]></description>
+            <parameters>
+                <parameter name="platformApplicationArn">
+                    <description><![CDATA[PlatformApplicationArn for GetPlatformApplicationAttributesInput.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getSubscriptionAttributes">
+            <description><![CDATA[The GetSubscriptionAttributes action returns all of the properties of a subscription.]]></description>
+            <parameters>
+                <parameter name="subscriptionArn">
+                    <description><![CDATA[The ARN of the subscription whose properties you want to get]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getTopicAttributes">
+            <description><![CDATA[The GetTopicAttributes action returns all of the properties of a topic. Topic properties returned might differ based on the authorization of the user.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic whose properties you want to get.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listEndpointsByPlatformApplication">
+            <description><![CDATA[Lists the endpoints and endpoint attributes for devices in a supported push notification service, such as GCM and APNS.]]></description>
+            <parameters>
+                <parameter name="arn">
+                    <description><![CDATA[The ARN of the platform application.]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listPlatformApplications">
+            <description><![CDATA[Lists the platform application objects for the supported push notification services, such as APNS and GCM.]]></description>
+            <parameters>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listSubscriptions">
+            <description><![CDATA[The ListSubscriptions action returns a list of the requester's subscriptions. Each call returns a limited list of subscriptions, up to 100. If there are more subscriptions, a NextToken is also returned. Use the NextToken parameter in a new ListSubscriptions call to get further results.]]></description>
+            <parameters>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listSubscriptionsByTopic">
+            <description><![CDATA[The SubscriptionsByTopic action returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100. If there are more subscriptions, a NextToken is also returned. Use the NextToken parameter in a new SubscriptionsByTopic call to get further results.]]></description>
+            <parameters>
+                <parameter name="arn">
+                    <description><![CDATA[The ARN of the topic.]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listTopics">
+            <description><![CDATA[The ListTopics action returns a list of the requester's topics. Each call returns a limited list of topics, up to 100. If there are more topics, a NextToken is also returned. Use the NextToken parameter in a new ListTopics call to get further results.]]></description>
+            <parameters>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="publish">
+            <description><![CDATA[The Publish action sends a message to all of a topic's subscribed endpoints. When a messageId is returned, the message has been saved and Amazon SNS will attempt to deliver it to the topic's subscribers shortly. The format of the outgoing message to each subscribed endpoint depends on the notification protocol selected.]]></description>
+            <parameters>
+                <parameter name="message">
+                    <description><![CDATA[The message you want to send to the topic.]]></description>
+                </parameter>
+                <parameter name="subject">
+                    <description><![CDATA[Optional parameter to be used as the "Subject" line when the message is delivered to email endpoints. This field will also be included, if present, in the standard JSON messages delivered to other endpoints.]]></description>
+                </parameter>
+                <parameter name="messageStructure">
+                    <description><![CDATA[Set <code>MessageStructure</code> to <code>json</code> if you want to send a different message for each protocol.]]></description>
+                </parameter>
+                <parameter name="messageAttributes">
+                    <description><![CDATA[The message attributes.]]></description>
+                </parameter>
+                <parameter name="topicArn">
+                    <description><![CDATA[The Amazon Resource Name (ARN) of the topic you want to publish to..]]></description>
+                </parameter>
+                <parameter name="targetArn">
+                    <description><![CDATA[The Amazon Resource Name (ARN) of the platform endpoint you want to publish to.]]></description>
+                </parameter>
+                <parameter name="phoneNumber">
+                    <description><![CDATA[The Phone Number of the device you want to publish to.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="removePermission">
+            <description><![CDATA[The RemovePermission action removes a statement from a topic's access control policy.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic whose access control policy you wish to modify.]]></description>
+                </parameter>
+                <parameter name="label">
+                    <description><![CDATA[The unique label of the statement you want to remove.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setEndpointAttributes">
+            <description><![CDATA[Sets the attributes for an endpoint for a device on one of the supported push notification services, such as GCM and APNS.]]></description>
+            <parameters>
+                <parameter name="endpoint">
+                    <description><![CDATA[Container for the parameters to the SetEndpointAttributes operation.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setPlatformApplicationAttributes">
+            <description><![CDATA[Sets the attributes of the platform application object for the supported push notification services, such as APNS and GCM.]]></description>
+            <parameters>
+                <parameter name="platformApplicationAttributes">
+                    <description><![CDATA[Container for the parameters to the SetPlatformApplicationAttributes operation.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setSubscriptionAttributes">
+            <description><![CDATA[The SubscriptionAttributes action allows a subscription owner to set an attribute of the topic to a new value.]]></description>
+            <parameters>
+                <parameter name="subscriptionArn">
+                    <description><![CDATA[The ARN of the subscription.]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute.]]></description>
+                </parameter>
+                <parameter name="attributeValue">
+                    <description><![CDATA[The value of the attribute.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setTopicAttributes">
+            <description><![CDATA[The TopicAttributes action allows a topic owner to set an attribute of the topic to a new value.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic.]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute.]]></description>
+                </parameter>
+                <parameter name="attributeValue">
+                    <description><![CDATA[The value of the attribute.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="subscribe">
+            <description><![CDATA[The Subscribe action prepares to subscribe an endpoint by sending the endpoint a confirmation message. To actually create a subscription, the endpoint owner must call the confirmSubscription action with the token from the confirmation message. Confirmation tokens are valid for three days.]]></description>
+            <parameters>
+                <parameter name="topicArn">
+                    <description><![CDATA[The ARN of the topic you want to subscribe to.]]></description>
+                </parameter>
+                <parameter name="protocol">
+                    <description><![CDATA[The protocol you want to use.]]></description>
+                </parameter>
+                <parameter name="endpoint">
+                    <description><![CDATA[The endpoint that you want to receive notifications. Endpoints vary by protocol:]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="unsubscribe">
+            <description><![CDATA[The Unsubscribe action deletes a subscription. If the subscription requires authentication for deletion, only the owner of the subscription or the its topic's owner can unsubscribe, and an AWS signature is required. If the Unsubscribe call does not require authentication and the requester is not the subscription owner, a final cancellation message is delivered to the endpoint, so that the endpoint owner can easily resubscribe to the topic if the Unsubscribe request was unintended.]]></description>
+            <parameters>
+                <parameter name="subscriptionArn">
+                    <description><![CDATA[The ARN of the subscription to be deleted.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+    </operations>
+    <sources/>
+    <types>
+        <type name="org.mule.extension.sns.api.attributes.RequestIDAttribute">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="requestId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sns.api.model.Endpoint">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="attributes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="endpointArn">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sns.api.model.PlatformApplication">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="attributes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="platformApplicationArn">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+    </types>
+</extension-documentation>

@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:mule="http://www.mulesoft.org/schema/mule/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.mulesoft.org/schema/mule/sqs" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"></xs:import>
+  <xs:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"></xs:import>
+  <xs:import namespace="http://www.mulesoft.org/schema/mule/core" schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></xs:import>
+  <xs:import namespace="http://www.mulesoft.org/schema/mule/tls" schemaLocation="http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd"></xs:import>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstract-shared-extension" name="config">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractExtensionType">
+          <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element minOccurs="1" maxOccurs="1" ref="mule:abstractConnectionProvider"></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:expiration-policy"></xs:element>
+          </xs:sequence>
+          <xs:attribute type="mule:expressionString" use="optional" name="defaultQueueUrl">
+            <xs:annotation>
+              <xs:documentation>This value is used when you do not set queue url on the operation level. If you do not specify the queue url here or on the operation level the exception is thrown. A queue URL is constructed in the following format: https://sqs.{REGION}.amazonaws.com/{ACCOUNT_NUMBER}/{QUEUE_NAME} Example: https://sqs.us-east-1.amazonaws.com/123456789101/test-queue</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:substitutableInt" use="optional" default="20" name="waitTime">
+            <xs:annotation>
+              <xs:documentation>Default value for the maximum duration of a single poll, in seconds: &lt;ul&gt; &lt;li&gt; Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. &lt;li&gt; Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. &lt;/ul&gt;</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="xs:string" use="required" name="name">
+            <xs:annotation>
+              <xs:documentation>The identifier of this element used to reference it in other components</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstractConnectionProvider" name="basic-connection">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractConnectionProviderType">
+          <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:reconnection"></xs:element>
+            <xs:element xmlns:tls="http://www.mulesoft.org/schema/mule/tls" minOccurs="0" maxOccurs="1" ref="tls:context"></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="large-payload-support">
+              <xs:complexType>
+                <xs:complexContent>
+                  <xs:extension xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" base="sqs:org.mule.extension.sqs.api.LargePayloadSupport"></xs:extension>
+                </xs:complexContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute type="xs:string" use="optional" name="tlsContext"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="testQueueArn">
+            <xs:annotation>
+              <xs:documentation>This parameter is used to test connection to SQS connector. If you do not specify this parameter the test connection is not performed. A queue ARN is constructed in the following format: arn:aws:{REGION}:{ACCOUNT_NUMBER}:{QUEUE_NAME}&lt;br&gt; Example: arn:aws:sqs:us-east-1:123456789101:test-queue</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="xs:string" use="optional" name="largePayloadSupport"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="sessionToken">
+            <xs:annotation>
+              <xs:documentation>The session token provided by Amazon STS.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="accessKey">
+            <xs:annotation>
+              <xs:documentation>The access key provided by Amazon.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="secretKey">
+            <xs:annotation>
+              <xs:documentation>The secret key provided by Amazon.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionBoolean" use="optional" default="false" name="tryDefaultAWSCredentialsProviderChain">
+            <xs:annotation>
+              <xs:documentation>Set this field to true to obtain credentials from the AWS environment, See: https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" default="us-east-1" name="region">
+            <xs:annotation>
+              <xs:documentation>Set the topic region endpoint</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="customSqsEndpoint">
+            <xs:annotation>
+              <xs:documentation>Sets a custom SQS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="connectionTimeout">
+            <xs:annotation>
+              <xs:documentation>The amount of time to wait (in milliseconds) when initially establishing a connection before the connector gives up and times out. A value of 0 means infinity and is not recommended.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="MILLISECONDS" name="connectionTimeoutUnit">
+            <xs:annotation>
+              <xs:documentation>Time unit used in the connection timeout configurations.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="maxConnections">
+            <xs:annotation>
+              <xs:documentation>Sets the maximum number of allowed open HTTP connections.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="socketTimeout">
+            <xs:annotation>
+              <xs:documentation>The amount of time to wait (in milliseconds) for data to be transferred over an established, open connection before the connection times out. A value of 0 means infinity and is not recommended.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="MILLISECONDS" name="socketTimeoutUnit">
+            <xs:annotation>
+              <xs:documentation>Time unit used in the socket timeout configurations.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyHost">
+            <xs:annotation>
+              <xs:documentation>The optional proxy host.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="proxyPort">
+            <xs:annotation>
+              <xs:documentation>The optional proxy port.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyUsername">
+            <xs:annotation>
+              <xs:documentation>The optional proxy username.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyPassword">
+            <xs:annotation>
+              <xs:documentation>The optional proxy password.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyDomain">
+            <xs:annotation>
+              <xs:documentation>The optional proxy domain.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyWorkstation">
+            <xs:annotation>
+              <xs:documentation>The optional proxy workstation.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="org.mule.extension.sqs.api.LargePayloadSupport">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="required" name="bucket"></xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="optional" default="256" name="messageSizeThreshold"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="org.mule.runtime.api.util.DataUnitEnumType" use="optional" default="KB" name="messageSizeThresholdUnit"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="customS3Endpoint"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" substitutionGroup="mule:abstractConnectionProvider" name="role-connection">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractConnectionProviderType">
+          <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element minOccurs="0" maxOccurs="1" ref="mule:reconnection"></xs:element>
+            <xs:element xmlns:tls="http://www.mulesoft.org/schema/mule/tls" minOccurs="0" maxOccurs="1" ref="tls:context"></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="large-payload-support">
+              <xs:complexType>
+                <xs:complexContent>
+                  <xs:extension xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" base="sqs:org.mule.extension.sqs.api.LargePayloadSupport"></xs:extension>
+                </xs:complexContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute type="xs:string" use="optional" name="tlsContext"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="testQueueArn">
+            <xs:annotation>
+              <xs:documentation>This parameter is used to test connection to SQS connector. If you do not specify this parameter the test connection is not performed. A queue ARN is constructed in the following format: arn:aws:{REGION}:{ACCOUNT_NUMBER}:{QUEUE_NAME}&lt;br&gt; Example: arn:aws:sqs:us-east-1:123456789101:test-queue</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="xs:string" use="optional" name="largePayloadSupport"></xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="roleARN">
+            <xs:annotation>
+              <xs:documentation>The Role ARN unique identifies role to assume in order to gain cross account access.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="customStsEndpoint">
+            <xs:annotation>
+              <xs:documentation>Sets a custom STS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="accessKey">
+            <xs:annotation>
+              <xs:documentation>The access key provided by Amazon.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="required" name="secretKey">
+            <xs:annotation>
+              <xs:documentation>The secret key provided by Amazon.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionBoolean" use="optional" default="false" name="tryDefaultAWSCredentialsProviderChain">
+            <xs:annotation>
+              <xs:documentation>Set this field to true to obtain credentials from the AWS environment, See: https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" default="us-east-1" name="region">
+            <xs:annotation>
+              <xs:documentation>Set the topic region endpoint</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="customSqsEndpoint">
+            <xs:annotation>
+              <xs:documentation>Sets a custom SQS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="connectionTimeout">
+            <xs:annotation>
+              <xs:documentation>The amount of time to wait (in milliseconds) when initially establishing a connection before the connector gives up and times out. A value of 0 means infinity and is not recommended.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="MILLISECONDS" name="connectionTimeoutUnit">
+            <xs:annotation>
+              <xs:documentation>Time unit used in the connection timeout configurations.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="maxConnections">
+            <xs:annotation>
+              <xs:documentation>Sets the maximum number of allowed open HTTP connections.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" default="50000" name="socketTimeout">
+            <xs:annotation>
+              <xs:documentation>The amount of time to wait (in milliseconds) for data to be transferred over an established, open connection before the connection times out. A value of 0 means infinity and is not recommended.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="MILLISECONDS" name="socketTimeoutUnit">
+            <xs:annotation>
+              <xs:documentation>Time unit used in the socket timeout configurations.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyHost">
+            <xs:annotation>
+              <xs:documentation>The optional proxy host.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionInt" use="optional" name="proxyPort">
+            <xs:annotation>
+              <xs:documentation>The optional proxy port.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyUsername">
+            <xs:annotation>
+              <xs:documentation>The optional proxy username.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyPassword">
+            <xs:annotation>
+              <xs:documentation>The optional proxy password.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyDomain">
+            <xs:annotation>
+              <xs:documentation>The optional proxy domain.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute type="mule:expressionString" use="optional" name="proxyWorkstation">
+            <xs:annotation>
+              <xs:documentation>The optional proxy workstation.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ReceivemessagesType" substitutionGroup="mule:abstract-message-source" name="receivemessages"></xs:element>
+  <xs:complexType name="ReceivemessagesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageSourceType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-redelivery-policy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:substitutableInt" use="optional" default="30" name="visibilityTimeout"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="SECONDS" name="visibilityTimeoutUnit"></xs:attribute>
+        <xs:attribute type="mule:substitutableBoolean" use="optional" default="false" name="preserveMessages"></xs:attribute>
+        <xs:attribute type="mule:substitutableInt" use="optional" default="1" name="numberOfMessages"></xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="queueUrl"></xs:attribute>
+        <xs:attribute type="mule:substitutableInt" use="optional" name="waitTime">
+          <xs:annotation>
+            <xs:documentation>Maximum duration of a single poll, in seconds. &lt;ul&gt; &lt;li&gt; Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. &lt;li&gt; Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. &lt;/ul&gt;</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:substitutableInt" use="optional" default="1" name="numberOfConsumingThreads"></xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:substitutableBoolean" use="optional" name="primaryNodeOnly">
+          <xs:annotation>
+            <xs:documentation>Whether this source should only be executed on the primary node when runnning in Cluster</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:substitutableLong" use="optional" default="1000" name="frequency"></xs:attribute>
+        <xs:attribute type="mule:substitutableLong" use="optional" default="0" name="startDelay"></xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="MILLISECONDS" name="timeUnit"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="AddPermissionType" substitutionGroup="mule:abstract-operator" name="add-permission">
+    <xs:annotation>
+      <xs:documentation>This operation adds a permission to a message queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="AddPermissionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="account-ids">
+            <xs:annotation>
+              <xs:documentation>IDs of the AWS accounts to share this queue with</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="account-id">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="actions">
+            <xs:annotation>
+              <xs:documentation>List to indicate how much to share (SendMessage, ReceiveMessage, ChangeMessageVisibility, DeleteMessage, GetQueueAttributes)</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="action">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="required" name="label">
+          <xs:annotation>
+            <xs:documentation>Name for this permission</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionList" use="optional" name="accountIds">
+          <xs:annotation>
+            <xs:documentation>IDs of the AWS accounts to share this queue with</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionList" use="optional" name="actions">
+          <xs:annotation>
+            <xs:documentation>List to indicate how much to share (SendMessage, ReceiveMessage, ChangeMessageVisibility, DeleteMessage, GetQueueAttributes)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Permissions will be added to the queue represented by this URL. This parameter is optional, and if you do not specify queueUrl, you must specify the default global queue URL at the configuration level.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ChangeMessageVisibilityType" substitutionGroup="mule:abstract-operator" name="change-message-visibility">
+    <xs:annotation>
+      <xs:documentation>This operation changes the visibility timeout of a specified message in a queue to a new value, not to exceed 12 hours.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ChangeMessageVisibilityType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="receiptHandle">
+          <xs:annotation>
+            <xs:documentation>Receipt handle associated with the message whose visibility timeout must change</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="required" name="visibilityTimeout">
+          <xs:annotation>
+            <xs:documentation>New value of the message visibility timeout (up to 4300 seconds or 12 hours)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/sqs" type="java.util.concurrent.TimeUnitEnumType" use="optional" default="SECONDS" name="visibilityTimeoutUnit"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the Amazon SQS queue to act on. This parameter is optional, and if you do not specify queueUrl, you must specify the Default Global Queue URL at the configuration level.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ChangeMessageVisibilityBatchType" substitutionGroup="mule:abstract-operator" name="change-message-visibility-batch">
+    <xs:annotation>
+      <xs:documentation>This operation changes the visibility timeout of up to 10 ChangeMessageVisibility requests, with each result reported individually in the response.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ChangeMessageVisibilityBatchType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="receipt-handles">
+            <xs:annotation>
+              <xs:documentation>List of receipt handles of the messages for which the visibility timeout must be changed</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the Amazon SQS queue to act on. This parameter is optional, and if you do not specify queueUrl, you must specify the Default Global Queue URL at the configuration level.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="CreateQueueType" substitutionGroup="mule:abstract-operator" name="create-queue">
+    <xs:annotation>
+      <xs:documentation>This operation creates a new queue, or returns the URL of an existing one. &lt;h4&gt;Queue Attributes&lt;/h4&gt; &lt;table&gt; &lt;thead&gt; &lt;tr&gt; &lt;th&gt;Name&lt;/th&gt; &lt;th&gt;Type&lt;/th&gt; &lt;th&gt;Description&lt;/th&gt; &lt;th&gt;Default Value&lt;/th&gt; &lt;/tr&gt; &lt;/thead&gt; &lt;tbody&gt; &lt;tr&gt; &lt;td&gt;All&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;td&gt;All values.&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;DelaySeconds&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The length of time, in seconds, for which the delivery of all messages in the queue is delayed. Valid values: An integer from 0 to 900 seconds (15 minutes). &lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;MaximumMessageSize&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;NuThe limit of how many bytes a message can contain before Amazon SQS rejects it. Valid values: An integer from 1,024 bytes (1 KiB) to 262,144 bytes (256 KiB). &lt;/td&gt; &lt;td&gt;262,144 (256 KiB)&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;MessageRetentionPeriod&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;NumbThe length of time, in seconds, for which Amazon SQS retains a message. Valid values: An integer from 60 seconds (1 minute) to 1,209,600 seconds (14 days) &lt;/td&gt; &lt;td&gt;345,600 (4 days)&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;Policy&lt;/td&gt; &lt;td&gt;String&lt;/td&gt; &lt;td&gt;The queue's policy. A valid AWS policy.&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;ReceiveMessageWaitTimeSeconds&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The length of time, in seconds, for which a ReceiveMessage action waits for a message to arrive. Valid values: An integer from 0 to 20 (seconds) &lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;RedrivePolicy&lt;/td&gt; &lt;td&gt;String&lt;/td&gt; &lt;td&gt;The string that includes the parameters for the dead-letter queue functionality of the source queue as a JSON object. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;VisibilityTimeout&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The visibility timeout for the queue, in seconds. Valid values: An integer from 0 to 43,200 (12 hours). &lt;/td&gt; &lt;td&gt;30&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;KmsMasterKeyId&lt;/td&gt; &lt;td&gt;String&lt;/td&gt; &lt;td&gt;The ID of an AWS-managed customer master key (CMK) for Amazon SQS or a custom CMK.&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;KmsDataKeyReusePeriodSeconds&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The length of time, in seconds, for which Amazon SQS can reuse a data key to encrypt or decrypt messages before calling AWS KMS again. An integer representing seconds, between 60 seconds (1 minute) and 86,400 seconds (24 hours). &lt;/td&gt; &lt;td&gt;300 (5 minutes).&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;FifoQueue&lt;/td&gt; &lt;td&gt;Boolean&lt;/td&gt; &lt;td&gt;Designates a queue as FIFO. Valid values: true, false. If you don't specify the FifoQueue attribute, Amazon SQS creates a standard queue. You can provide this attribute only during queue creation. You can't change it for an existing queue. When you set this attribute, you must also provide the MessageGroupId for your messages explicitly. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;ContentBasedDeduplication&lt;/td&gt; &lt;td&gt;Boolean&lt;/td&gt; &lt;td&gt;Enables content-based deduplication. Valid values: true, false. Every message must have a unique MessageDeduplicationId. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;ApproximateNumberOfMessages&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The approximate number of messages available for retrieval from the queue. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;ApproximateNumberOfMessagesDelayed&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The approximate number of messages in the queue that are delayed and not available for reading immediately. This can happen when the queue is configured as a delay queue or when a message has been sent with a delay parameter. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;ApproximateNumberOfMessagesNotVisible&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The approximate number of messages that are in flight. Messages are considered to be in flight if they have been sent to a client but have not yet been deleted or have not yet reached the end of their visibility window. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;CreatedTimestamp&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The time when the queue was created in seconds&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;LastModifiedTimestamp&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The time when the queue was last changed in seconds&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;QueueArn&lt;/td&gt; &lt;td&gt;String&lt;/td&gt; &lt;td&gt;The Amazon resource name (ARN) of the queue&lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;/tbody&gt; &lt;/table&gt; &lt;h4&gt;Redrive Policy&lt;/h4&gt; &lt;table&gt; &lt;thead&gt; &lt;tr&gt; &lt;td&gt;Name&lt;/td&gt; &lt;td&gt;Type&lt;/td&gt; &lt;td&gt;Description&lt;/td&gt; &lt;td&gt;Default Value&lt;/td&gt; &lt;/tr&gt; &lt;/thead&gt; &lt;tbody&gt; &lt;tr&gt; &lt;td&gt;deadLetterTargetArn&lt;/td&gt; &lt;td&gt;String&lt;/td&gt; &lt;td&gt;The Amazon Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded. &lt;/td&gt; &lt;td&gt;&lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td&gt;maxReceiveCount&lt;/td&gt; &lt;td&gt;Number&lt;/td&gt; &lt;td&gt;The number of times a message is delivered to the source queue before being moved to the dead-letter queue. When the ReceiveCount for a message exceeds the maxReceiveCount for a queue, Amazon SQS moves the message to the dead-letter-queue. &lt;/td&gt; &lt;/tr&gt; &lt;/tbody&gt; &lt;/table&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CreateQueueType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="attributes">
+            <xs:annotation>
+              <xs:documentation>A map of attributes with their corresponding values. (See the table above)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="required" name="queueName">
+          <xs:annotation>
+            <xs:documentation>Name of the queue to be created</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteMessageType" substitutionGroup="mule:abstract-operator" name="delete-message">
+    <xs:annotation>
+      <xs:documentation>This operation deletes the message identified by the message object in the queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DeleteMessageType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="required" name="receiptHandle">
+          <xs:annotation>
+            <xs:documentation>Receipt handle of the message to be deleted</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue to delete messages from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteMessageBatchType" substitutionGroup="mule:abstract-operator" name="delete-message-batch">
+    <xs:annotation>
+      <xs:documentation>This operation deletes up to 10 messages from the specified queue. This is a batch version of DeleteMessage.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DeleteMessageBatchType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="entries">
+            <xs:annotation>
+              <xs:documentation>List of receipt handles for the messages to be deleted</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" minOccurs="0" maxOccurs="unbounded" ref="sqs:abstract-delete-message-batch-request-entry"></xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionList" use="optional" name="entries">
+          <xs:annotation>
+            <xs:documentation>List of receipt handles for the messages to be deleted</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue to delete messages as a batch from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="org.mule.extension.sqs.api.model.DeleteMessageBatchRequestEntry">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractExtensionType">
+        <xs:attribute type="mule:expressionString" use="optional" name="id"></xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="receiptHandle"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" type="sqs:org.mule.extension.sqs.api.model.DeleteMessageBatchRequestEntry" abstract="true" name="abstract-delete-message-batch-request-entry"></xs:element>
+  <xs:element xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" substitutionGroup="sqs:abstract-delete-message-batch-request-entry" name="delete-message-batch-request-entry">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="sqs:org.mule.extension.sqs.api.model.DeleteMessageBatchRequestEntry"></xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="DeleteQueueType" substitutionGroup="mule:abstract-operator" name="delete-queue">
+    <xs:annotation>
+      <xs:documentation>This operation deletes the message queue represented by this object and can even delete a non-empty queue. Because deleting a queue can take up to 60 seconds, wait at least that long before you create a new queue with the same name.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DeleteQueueType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue to delete. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetApproximateNumberOfMessagesType" substitutionGroup="mule:abstract-operator" name="get-approximate-number-of-messages">
+    <xs:annotation>
+      <xs:documentation>This operation retrieves an approximate number of visible messages for a queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="GetApproximateNumberOfMessagesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetQueueAttributesType" substitutionGroup="mule:abstract-operator" name="get-queue-attributes">
+    <xs:annotation>
+      <xs:documentation>This operation shows queue attributes to expose the underlying functionality.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="GetQueueAttributesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="attribute-names">
+            <xs:annotation>
+              <xs:documentation>List of attribute retrieve information for</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="attribute-name">
+                  <xs:complexType>
+                    <xs:attribute type="mule:expressionString" use="required" name="value"></xs:attribute>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionList" use="optional" name="attributeNames">
+          <xs:annotation>
+            <xs:documentation>List of attribute retrieve information for</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the Amazon SQS queue to take action on This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="GetQueueUrlType" substitutionGroup="mule:abstract-operator" name="get-queue-url">
+    <xs:annotation>
+      <xs:documentation>This operation returns the URL of an existing queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="GetQueueUrlType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="required" name="queueName">
+          <xs:annotation>
+            <xs:documentation>Name of the queue whose URL must be fetched</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueOwnerAWSAccountId">
+          <xs:annotation>
+            <xs:documentation>AWS account ID of the owner that created the queue</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListDeadLetterSourceQueuesType" substitutionGroup="mule:abstract-operator" name="list-dead-letter-source-queues">
+    <xs:annotation>
+      <xs:documentation>This operation returns a list of the queues that have the RedrivePolicy queue attribute configured with a dead-letter queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListDeadLetterSourceQueuesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Queue URL of a dead-letter queue. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="outputMimeType">
+          <xs:annotation>
+            <xs:documentation>The mime type of the payload that this operation outputs.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ListQueuesType" substitutionGroup="mule:abstract-operator" name="list-queues">
+    <xs:annotation>
+      <xs:documentation>This operation returns a list of your queues. The maximum number of queues that can be returned is 1000.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListQueuesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueNamePrefix">
+          <xs:annotation>
+            <xs:documentation>String to use for filtering the list results. Only those queues whose name begins with the specified string are returned.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="outputMimeType">
+          <xs:annotation>
+            <xs:documentation>The mime type of the payload that this operation outputs.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="PurgeQueueType" substitutionGroup="mule:abstract-operator" name="purge-queue">
+    <xs:annotation>
+      <xs:documentation>This operation deletes the messages in a queue specified by the queue URL.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="PurgeQueueType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Queue URL where messages are to be fetched from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="ReadType" substitutionGroup="mule:abstract-operator" name="read">
+    <xs:annotation>
+      <xs:documentation>This operation reads a number of messages from a queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ReadType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="optional" name="waitTime">
+          <xs:annotation>
+            <xs:documentation>Maximum duration of a single poll, in seconds. &lt;ul&gt; &lt;li&gt; Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. &lt;li&gt; Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. &lt;/ul&gt;</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionInt" use="required" name="maxNumberOfMessages">
+          <xs:annotation>
+            <xs:documentation>Maximum number of messages to read</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="RemovePermissionType" substitutionGroup="mule:abstract-operator" name="remove-permission">
+    <xs:annotation>
+      <xs:documentation>This operation removes a permission from this message queue.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RemovePermissionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="required" name="label">
+          <xs:annotation>
+            <xs:documentation>Name for the permission to be removed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Permissions will be deleted from the queue represented by this URL.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SendMessageType" substitutionGroup="mule:abstract-operator" name="send-message">
+    <xs:annotation>
+      <xs:documentation>This operation sends a message to a specified queue. The message must be between 1 and 256K bytes long.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SendMessageType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="message">
+            <xs:annotation>
+              <xs:documentation>Message to send</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Queue where the message is to be sent.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SendMessageBatchType" substitutionGroup="mule:abstract-operator" name="send-message-batch">
+    <xs:annotation>
+      <xs:documentation>This operation delivers up to 10 messages to the specified queue. This is a batch version of SendMessage.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SendMessageBatchType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="messages">
+            <xs:annotation>
+              <xs:documentation>List of SendMessageBatchRequestEntry items</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>Queue where the message is to be sent.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/sqs" xmlns:mule="http://www.mulesoft.org/schema/mule/core" type="SetQueueAttributesType" substitutionGroup="mule:abstract-operator" name="set-queue-attributes">
+    <xs:annotation>
+      <xs:documentation>This operation sets the value of one or more queue attributes, which can take up to 60 seconds to propagate throughout the SQS system (although changes made to the MessageRetentionPeriod attribute can take up to 15 minutes).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SetQueueAttributesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractOperatorType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element minOccurs="0" maxOccurs="1" ref="mule:abstract-reconnection-strategy"></xs:element>
+          <xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="attributes">
+            <xs:annotation>
+              <xs:documentation>Map of attributes to set</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute type="mule:expressionString" use="optional" name="queueUrl">
+          <xs:annotation>
+            <xs:documentation>URL of the queue.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="required" name="config-ref">
+          <xs:annotation>
+            <xs:documentation>The name of the configuration to be used to execute this component</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:string" use="optional" name="target">
+          <xs:annotation>
+            <xs:documentation>The name of a variable on which the operation's output will be placed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="mule:expressionString" use="optional" default="#[payload]" name="targetValue">
+          <xs:annotation>
+            <xs:documentation>An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="org.mule.runtime.api.util.DataUnitEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="BYTE"></xs:enumeration>
+          <xs:enumeration value="KB"></xs:enumeration>
+          <xs:enumeration value="MB"></xs:enumeration>
+          <xs:enumeration value="GB"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="java.util.concurrent.TimeUnitEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NANOSECONDS"></xs:enumeration>
+          <xs:enumeration value="MICROSECONDS"></xs:enumeration>
+          <xs:enumeration value="MILLISECONDS"></xs:enumeration>
+          <xs:enumeration value="SECONDS"></xs:enumeration>
+          <xs:enumeration value="MINUTES"></xs:enumeration>
+          <xs:enumeration value="HOURS"></xs:enumeration>
+          <xs:enumeration value="DAYS"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+</xs:schema>

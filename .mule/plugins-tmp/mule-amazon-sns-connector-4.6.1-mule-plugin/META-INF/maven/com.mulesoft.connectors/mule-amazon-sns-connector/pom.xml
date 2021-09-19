@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mule-amazon-sns-connector</artifactId>
+    <version>4.6.1</version>
+    <name>Amazon SNS Connector - Mule 4</name>
+    <packaging>mule-extension</packaging>
+
+    <parent>
+        <groupId>com.mulesoft.connectors</groupId>
+        <artifactId>mule-connectivity-parent</artifactId>
+        <version>1.3.8</version>
+    </parent>
+
+    <properties>
+        <!-- Exclude whole api package as it influence coverage significantly and contains no logic to test. -->
+        <sonar.exclusions>**org/mule/extension/sns/api/**/*.java</sonar.exclusions>
+        <!-- Property added to comply with a faulty feature on SDK 1.1 which makes the connector fail. -->
+        <extensionsAnnotationProcessor>
+            org.mule.runtime.module.extension.internal.resources.ExtensionResourcesGeneratorAnnotationProcessor
+        </extensionsAnnotationProcessor>
+        <!-- Property added to comply with a faulty feature on SDK 1.1 which makes the connector fail. -->
+        <apt.phase>compile</apt.phase>
+        <amazon.sdk.version>1.11.1025</amazon.sdk.version>
+        <!-- runtime version to run -->
+        <runtimeVersion>4.2.0</runtimeVersion>
+        <runtimeProduct>MULE_EE</runtimeProduct>
+        <jacoco.maven.plugin.version>0.8.4</jacoco.maven.plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mulesoft.connectors</groupId>
+            <artifactId>aws-connector-commons</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sns</artifactId>
+            <version>${amazon.sdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.mulesoft.munit</groupId>
+                <artifactId>munit-extensions-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.connectors</groupId>
+                        <artifactId>mule-amazon-sqs-connector</artifactId>
+                        <version>5.3.0</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!-- Remove to run Junit Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>connector-analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>com.sun.mail:jakarta.mail:jar:1.6.3</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <scm>
+        <connection>scm:git:git@github.com:mulesoft/mule4-amazon-sns-connector.git</connection>
+        <developerConnection>scm:git:git@github.com:mulesoft/mule4-amazon-sns-connector.git</developerConnection>
+        <url>https://github.com/mulesoft/mule4-amazon-sns-connector</url>
+        <tag>mule-amazon-sns-connector-4.6.1</tag>
+    </scm>
+    <repositories>
+        <repository>
+            <id>mule-releases</id>
+            <name>Nexus Public Releases</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+</project>

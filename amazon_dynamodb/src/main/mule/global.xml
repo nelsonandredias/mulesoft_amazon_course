@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sns="http://www.mulesoft.org/schema/mule/sns" xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:dynamodb="http://www.mulesoft.org/schema/mule/dynamodb" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/dynamodb http://www.mulesoft.org/schema/mule/dynamodb/current/mule-dynamodb.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+http://www.mulesoft.org/schema/mule/sns http://www.mulesoft.org/schema/mule/sns/current/mule-sns.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="38b7ff0a-545f-492a-a052-6e8e770ad159" file="config.properties" />
+	<dynamodb:config name="Amazon_DynamoDB_Configuration" doc:name="Amazon DynamoDB Configuration" doc:id="b1cc83a1-beac-4dd8-b12e-3f4aa13c9b3c" >
+		<dynamodb:basic-connection accessKey="${AmazonAccessKey}" secretKey="${AmazonSecretKey}" region="EU_WEST_1"/>
+	</dynamodb:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fb9c4fb5-1ae5-4432-81c6-61baf22f0267" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<sqs:config name="Amazon_SQS_Configuration" doc:name="Amazon SQS Configuration" doc:id="655c50ec-3b75-41ad-a717-26b1d88bbf40" >
+		<sqs:basic-connection accessKey="${AmazonAccessKey}" secretKey="${AmazonSecretKey}" region="eu-west-1" />
+	</sqs:config>
+	<sns:config name="Amazon_SNS_configuration" doc:name="Amazon SNS configuration" doc:id="b7091105-1680-4a0a-9bc5-866c71374d38" >
+		<sns:basic-connection accessKey="${AmazonAccessKey}" secretKey="${AmazonSecretKey}" region="EU_WEST_1" />
+	</sns:config>
+</mule>

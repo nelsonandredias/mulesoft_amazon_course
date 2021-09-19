@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sns="http://www.mulesoft.org/schema/mule/sns" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sns http://www.mulesoft.org/schema/mule/sns/current/mule-sns.xsd">
+	<flow name="createAmazonSNSTopic" doc:id="53470da9-56c4-432e-b837-60bbef4984e0" >
+		<http:listener doc:name="HTTP POST" doc:id="be2a6f3c-02d9-4d9a-9690-f866dd77cf4b" config-ref="HTTP_Listener_config" path="/createTopic" allowedMethods="POST"/>
+		<set-variable value="#[payload.newTopic]" doc:name="Set Variable topicName" doc:id="5e243454-31b4-4106-9e3b-19b4e5e5c0d7" variableName="topicName"/>
+		<sns:create-topic doc:name="Create topic" doc:id="03559fc0-d400-4a82-a4c3-c1c6a538bc34" config-ref="Amazon_SNS_configuration" topicName="#[vars.topicName]"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="5d267ca1-a543-43f3-80dd-080b18ae343b" />
+	</flow>
+	<flow name="subscribeAmazonSNStopic" doc:id="df54cef0-dee7-45f6-9dfc-77b3efd5b974" >
+		<http:listener doc:name="HTTP POST" doc:id="812533ad-35b8-4cfc-a0a6-1ed5238554e5" config-ref="HTTP_Listener_config" path="/subscribeTopic" allowedMethods="POST"/>
+		<set-variable value="#[payload.topicARN]" doc:name="Set Variable topicARN" doc:id="7717ea9c-b55c-4abf-b2e3-021e1c153899" variableName="topicARN"/>
+		<set-variable value="#[payload.protocol]" doc:name="Set Variable protocol" doc:id="86684146-1ccb-40fd-92b2-fe8082cc4443" variableName="protocol"/>
+		<set-variable value="#[payload.endpoint]" doc:name="Set Variable endpoint" doc:id="2d78d601-2930-42d9-8a1d-e2f34bc4f674" variableName="endpoint"/>
+		<logger level="INFO" doc:name="Log Variables" doc:id="38e8094b-e9ed-4356-8b71-164eef959996" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"topicARN": vars.topicARN,&#10;	"protocol": vars.protocol,&#10;	"endpoint": vars.endpoint&#10;}]'/>
+		<sns:subscribe protocol="#[vars.protocol]" doc:name="Subscribe" doc:id="6d09a030-0edb-4a28-9e4b-92ce41a9186b" config-ref="Amazon_SNS_configuration" topicArn="#[vars.topicARN]" endpoint="#[vars.endpoint]"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="a7a11219-36af-4767-8870-3fe1372842f5" />
+	</flow>
+	<flow name="sendMessageAmazonSNStopic" doc:id="60c52f51-717f-4f95-b504-f00e87fd0ce6" >
+		<http:listener doc:name="HTTP POST" doc:id="29d0e5f4-c11e-4fb3-91ac-6bd1aa6c520d" config-ref="HTTP_Listener_config" path="/sendSNSmessage" allowedMethods="POST"/>
+		<set-variable value="#[payload.topicARN]" doc:name="Set Variable topicARN" doc:id="fbdfa5a6-903b-43db-aeb4-53b274285949" variableName="topicARN"/>
+		<set-variable value="#[payload.subject]" doc:name="Set Variable subject" doc:id="71f19bae-7f11-4897-8174-f30950d6319b" variableName="subject"/>
+		<logger level="INFO" doc:name="Log variables" doc:id="f206145b-b86c-4402-ac98-7202503caf86" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"topicARN": vars.topicARN,&#10;	"subject": vars.subject,&#10;	"messageBody": payload&#10;}]'/>
+		<sns:publish doc:name="Publish" doc:id="55a41afd-37ee-4644-b22f-aee4ef18117d" config-ref="Amazon_SNS_configuration" subject="#[vars.subject]" topicArn="#[vars.topicARN]">
+			<sns:message ><![CDATA[#[write(payload, "application/json")]]]></sns:message>
+		</sns:publish>
+		<set-payload value='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "message has been published!!!"&#10;}]' doc:name="Set Payload Response" doc:id="fef112bd-2f1e-478d-bd36-9fdde941175b" />
+	</flow>
+</mule>

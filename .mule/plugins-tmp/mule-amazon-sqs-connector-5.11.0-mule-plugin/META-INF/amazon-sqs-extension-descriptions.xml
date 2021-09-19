@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension-documentation>
+    <configs>
+        <config name="config">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="defaultQueueUrl">
+                    <description><![CDATA[This value is used when you do not set queue url on the operation level. If you do not specify the queue url here or on the operation level the exception is thrown. A queue URL is constructed in the following format: https://sqs.{REGION}.amazonaws.com/{ACCOUNT_NUMBER}/{QUEUE_NAME} Example: https://sqs.us-east-1.amazonaws.com/123456789101/test-queue]]></description>
+                </parameter>
+                <parameter name="waitTime">
+                    <description><![CDATA[Default value for the maximum duration of a single poll, in seconds: <ul> <li> Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. <li> Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. </ul>]]></description>
+                </parameter>
+                <parameter name="expirationPolicy">
+                    <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
+                </parameter>
+            </parameters>
+        </config>
+    </configs>
+    <connections>
+        <connection name="basic">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="testQueueArn">
+                    <description><![CDATA[This parameter is used to test connection to SQS connector. If you do not specify this parameter the test connection is not performed. A queue ARN is constructed in the following format: arn:aws:{REGION}:{ACCOUNT_NUMBER}:{QUEUE_NAME}<br> Example: arn:aws:sqs:us-east-1:123456789101:test-queue]]></description>
+                </parameter>
+                <parameter name="largePayloadSupport">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="sessionToken">
+                    <description><![CDATA[The session token provided by Amazon STS.]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[The access key provided by Amazon.]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[The secret key provided by Amazon.]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[Set this field to true to obtain credentials from the AWS environment, See: https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[Set the topic region endpoint]]></description>
+                </parameter>
+                <parameter name="customSqsEndpoint">
+                    <description><![CDATA[Sets a custom SQS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[The amount of time to wait (in milliseconds) when initially establishing a connection before the connector gives up and times out. A value of 0 means infinity and is not recommended.]]></description>
+                </parameter>
+                <parameter name="connectionTimeoutUnit">
+                    <description><![CDATA[Time unit used in the connection timeout configurations.]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[Sets the maximum number of allowed open HTTP connections.]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[The amount of time to wait (in milliseconds) for data to be transferred over an established, open connection before the connection times out. A value of 0 means infinity and is not recommended.]]></description>
+                </parameter>
+                <parameter name="socketTimeoutUnit">
+                    <description><![CDATA[Time unit used in the socket timeout configurations.]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[Protocol to use for communication. Valid values are HTTP and HTTPS. Default value is HTTP. When using HTTPS the HTTP communication is going to be secured using TLS / SSL. If HTTPS was configured as protocol then the user needs to configure at least the keystore in the tls:context child element of this listener-config.]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[The optional proxy host.]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[The optional proxy port.]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[The optional proxy username.]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[The optional proxy password.]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[The optional proxy domain.]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[The optional proxy workstation.]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="role">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="testQueueArn">
+                    <description><![CDATA[This parameter is used to test connection to SQS connector. If you do not specify this parameter the test connection is not performed. A queue ARN is constructed in the following format: arn:aws:{REGION}:{ACCOUNT_NUMBER}:{QUEUE_NAME}<br> Example: arn:aws:sqs:us-east-1:123456789101:test-queue]]></description>
+                </parameter>
+                <parameter name="largePayloadSupport">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="roleARN">
+                    <description><![CDATA[The Role ARN unique identifies role to assume in order to gain cross account access.]]></description>
+                </parameter>
+                <parameter name="customStsEndpoint">
+                    <description><![CDATA[Sets a custom STS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.]]></description>
+                </parameter>
+                <parameter name="accessKey">
+                    <description><![CDATA[The access key provided by Amazon.]]></description>
+                </parameter>
+                <parameter name="secretKey">
+                    <description><![CDATA[The secret key provided by Amazon.]]></description>
+                </parameter>
+                <parameter name="tryDefaultAWSCredentialsProviderChain">
+                    <description><![CDATA[Set this field to true to obtain credentials from the AWS environment, See: https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html]]></description>
+                </parameter>
+                <parameter name="region">
+                    <description><![CDATA[Set the topic region endpoint]]></description>
+                </parameter>
+                <parameter name="customSqsEndpoint">
+                    <description><![CDATA[Sets a custom SQS endpoint. Useful when a non-standard service endpoint is required, such as a VPC endpoint.]]></description>
+                </parameter>
+                <parameter name="connectionTimeout">
+                    <description><![CDATA[The amount of time to wait (in milliseconds) when initially establishing a connection before the connector gives up and times out. A value of 0 means infinity and is not recommended.]]></description>
+                </parameter>
+                <parameter name="connectionTimeoutUnit">
+                    <description><![CDATA[Time unit used in the connection timeout configurations.]]></description>
+                </parameter>
+                <parameter name="maxConnections">
+                    <description><![CDATA[Sets the maximum number of allowed open HTTP connections.]]></description>
+                </parameter>
+                <parameter name="socketTimeout">
+                    <description><![CDATA[The amount of time to wait (in milliseconds) for data to be transferred over an established, open connection before the connection times out. A value of 0 means infinity and is not recommended.]]></description>
+                </parameter>
+                <parameter name="socketTimeoutUnit">
+                    <description><![CDATA[Time unit used in the socket timeout configurations.]]></description>
+                </parameter>
+                <parameter name="tlsContext">
+                    <description><![CDATA[Protocol to use for communication. Valid values are HTTP and HTTPS. Default value is HTTP. When using HTTPS the HTTP communication is going to be secured using TLS / SSL. If HTTPS was configured as protocol then the user needs to configure at least the keystore in the tls:context child element of this listener-config.]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="proxyHost">
+                    <description><![CDATA[The optional proxy host.]]></description>
+                </parameter>
+                <parameter name="proxyPort">
+                    <description><![CDATA[The optional proxy port.]]></description>
+                </parameter>
+                <parameter name="proxyUsername">
+                    <description><![CDATA[The optional proxy username.]]></description>
+                </parameter>
+                <parameter name="proxyPassword">
+                    <description><![CDATA[The optional proxy password.]]></description>
+                </parameter>
+                <parameter name="proxyDomain">
+                    <description><![CDATA[The optional proxy domain.]]></description>
+                </parameter>
+                <parameter name="proxyWorkstation">
+                    <description><![CDATA[The optional proxy workstation.]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+    </connections>
+    <extension name="Amazon SQS">
+        <description><![CDATA[]]></description>
+        <parameters/>
+    </extension>
+    <operations>
+        <operation name="addPermission">
+            <description><![CDATA[This operation adds a permission to a message queue.]]></description>
+            <parameters>
+                <parameter name="label">
+                    <description><![CDATA[Name for this permission]]></description>
+                </parameter>
+                <parameter name="accountIds">
+                    <description><![CDATA[IDs of the AWS accounts to share this queue with]]></description>
+                </parameter>
+                <parameter name="actions">
+                    <description><![CDATA[List to indicate how much to share (SendMessage, ReceiveMessage, ChangeMessageVisibility, DeleteMessage, GetQueueAttributes)]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Permissions will be added to the queue represented by this URL. This parameter is optional, and if you do not specify queueUrl, you must specify the default global queue URL at the configuration level.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="changeMessageVisibility">
+            <description><![CDATA[This operation changes the visibility timeout of a specified message in a queue to a new value, not to exceed 12 hours.]]></description>
+            <parameters>
+                <parameter name="receiptHandle">
+                    <description><![CDATA[Receipt handle associated with the message whose visibility timeout must change]]></description>
+                </parameter>
+                <parameter name="visibilityTimeout">
+                    <description><![CDATA[New value of the message visibility timeout (up to 4300 seconds or 12 hours)]]></description>
+                </parameter>
+                <parameter name="visibilityTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the Amazon SQS queue to act on. This parameter is optional, and if you do not specify queueUrl, you must specify the Default Global Queue URL at the configuration level.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="changeMessageVisibilityBatch">
+            <description><![CDATA[This operation changes the visibility timeout of up to 10 ChangeMessageVisibility requests, with each result reported individually in the response.]]></description>
+            <parameters>
+                <parameter name="receiptHandles">
+                    <description><![CDATA[List of receipt handles of the messages for which the visibility timeout must be changed]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the Amazon SQS queue to act on. This parameter is optional, and if you do not specify queueUrl, you must specify the Default Global Queue URL at the configuration level.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="createQueue">
+            <description><![CDATA[This operation creates a new queue, or returns the URL of an existing one. <h4>Queue Attributes</h4> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default Value</th> </tr> </thead> <tbody> <tr> <td>All</td> <td></td> <td>All values.</td> <td></td> </tr> <tr> <td>DelaySeconds</td> <td>Number</td> <td>The length of time, in seconds, for which the delivery of all messages in the queue is delayed. Valid values: An integer from 0 to 900 seconds (15 minutes). </td> <td>0</td> </tr> <tr> <td>MaximumMessageSize</td> <td>Number</td> <td>NuThe limit of how many bytes a message can contain before Amazon SQS rejects it. Valid values: An integer from 1,024 bytes (1 KiB) to 262,144 bytes (256 KiB). </td> <td>262,144 (256 KiB)</td> </tr> <tr> <td>MessageRetentionPeriod</td> <td>Number</td> <td>NumbThe length of time, in seconds, for which Amazon SQS retains a message. Valid values: An integer from 60 seconds (1 minute) to 1,209,600 seconds (14 days) </td> <td>345,600 (4 days)</td> </tr> <tr> <td>Policy</td> <td>String</td> <td>The queue's policy. A valid AWS policy.</td> <td></td> </tr> <tr> <td>ReceiveMessageWaitTimeSeconds</td> <td>Number</td> <td>The length of time, in seconds, for which a ReceiveMessage action waits for a message to arrive. Valid values: An integer from 0 to 20 (seconds) </td> <td>0</td> </tr> <tr> <td>RedrivePolicy</td> <td>String</td> <td>The string that includes the parameters for the dead-letter queue functionality of the source queue as a JSON object. </td> <td></td> </tr> <tr> <td>VisibilityTimeout</td> <td>Number</td> <td>The visibility timeout for the queue, in seconds. Valid values: An integer from 0 to 43,200 (12 hours). </td> <td>30</td> </tr> <tr> <td>KmsMasterKeyId</td> <td>String</td> <td>The ID of an AWS-managed customer master key (CMK) for Amazon SQS or a custom CMK.</td> <td></td> </tr> <tr> <td>KmsDataKeyReusePeriodSeconds</td> <td>Number</td> <td>The length of time, in seconds, for which Amazon SQS can reuse a data key to encrypt or decrypt messages before calling AWS KMS again. An integer representing seconds, between 60 seconds (1 minute) and 86,400 seconds (24 hours). </td> <td>300 (5 minutes).</td> </tr> <tr> <td>FifoQueue</td> <td>Boolean</td> <td>Designates a queue as FIFO. Valid values: true, false. If you don't specify the FifoQueue attribute, Amazon SQS creates a standard queue. You can provide this attribute only during queue creation. You can't change it for an existing queue. When you set this attribute, you must also provide the MessageGroupId for your messages explicitly. </td> <td></td> </tr> <tr> <td>ContentBasedDeduplication</td> <td>Boolean</td> <td>Enables content-based deduplication. Valid values: true, false. Every message must have a unique MessageDeduplicationId. </td> <td></td> </tr> <tr> <td>ApproximateNumberOfMessages</td> <td>Number</td> <td>The approximate number of messages available for retrieval from the queue. </td> <td></td> </tr> <tr> <td>ApproximateNumberOfMessagesDelayed</td> <td>Number</td> <td>The approximate number of messages in the queue that are delayed and not available for reading immediately. This can happen when the queue is configured as a delay queue or when a message has been sent with a delay parameter. </td> <td></td> </tr> <tr> <td>ApproximateNumberOfMessagesNotVisible</td> <td>Number</td> <td>The approximate number of messages that are in flight. Messages are considered to be in flight if they have been sent to a client but have not yet been deleted or have not yet reached the end of their visibility window. </td> <td></td> </tr> <tr> <td>CreatedTimestamp</td> <td>Number</td> <td>The time when the queue was created in seconds</td> <td></td> </tr> <tr> <td>LastModifiedTimestamp</td> <td>Number</td> <td>The time when the queue was last changed in seconds</td> <td></td> </tr> <tr> <td>QueueArn</td> <td>String</td> <td>The Amazon resource name (ARN) of the queue</td> <td></td> </tr> </tbody> </table> <h4>Redrive Policy</h4> <table> <thead> <tr> <td>Name</td> <td>Type</td> <td>Description</td> <td>Default Value</td> </tr> </thead> <tbody> <tr> <td>deadLetterTargetArn</td> <td>String</td> <td>The Amazon Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded. </td> <td></td> </tr> <tr> <td>maxReceiveCount</td> <td>Number</td> <td>The number of times a message is delivered to the source queue before being moved to the dead-letter queue. When the ReceiveCount for a message exceeds the maxReceiveCount for a queue, Amazon SQS moves the message to the dead-letter-queue. </td> </tr> </tbody> </table>]]></description>
+            <parameters>
+                <parameter name="queueName">
+                    <description><![CDATA[Name of the queue to be created]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[A map of attributes with their corresponding values. (See the table above)]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteMessage">
+            <description><![CDATA[This operation deletes the message identified by the message object in the queue.]]></description>
+            <parameters>
+                <parameter name="receiptHandle">
+                    <description><![CDATA[Receipt handle of the message to be deleted]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue to delete messages from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteMessageBatch">
+            <description><![CDATA[This operation deletes up to 10 messages from the specified queue. This is a batch version of DeleteMessage.]]></description>
+            <parameters>
+                <parameter name="entries">
+                    <description><![CDATA[List of receipt handles for the messages to be deleted]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue to delete messages as a batch from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteQueue">
+            <description><![CDATA[This operation deletes the message queue represented by this object and can even delete a non-empty queue. Because deleting a queue can take up to 60 seconds, wait at least that long before you create a new queue with the same name.]]></description>
+            <parameters>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue to delete. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getApproximateNumberOfMessages">
+            <description><![CDATA[This operation retrieves an approximate number of visible messages for a queue.]]></description>
+            <parameters>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getQueueAttributes">
+            <description><![CDATA[This operation shows queue attributes to expose the underlying functionality.]]></description>
+            <parameters>
+                <parameter name="attributeNames">
+                    <description><![CDATA[List of attribute retrieve information for]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the Amazon SQS queue to take action on This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="getQueueUrl">
+            <description><![CDATA[This operation returns the URL of an existing queue.]]></description>
+            <parameters>
+                <parameter name="queueName">
+                    <description><![CDATA[Name of the queue whose URL must be fetched]]></description>
+                </parameter>
+                <parameter name="queueOwnerAWSAccountId">
+                    <description><![CDATA[AWS account ID of the owner that created the queue]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listDeadLetterSourceQueues">
+            <description><![CDATA[This operation returns a list of the queues that have the RedrivePolicy queue attribute configured with a dead-letter queue.]]></description>
+            <parameters>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Queue URL of a dead-letter queue. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="listQueues">
+            <description><![CDATA[This operation returns a list of your queues. The maximum number of queues that can be returned is 1000.]]></description>
+            <parameters>
+                <parameter name="queueNamePrefix">
+                    <description><![CDATA[String to use for filtering the list results. Only those queues whose name begins with the specified string are returned.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="purgeQueue">
+            <description><![CDATA[This operation deletes the messages in a queue specified by the queue URL.]]></description>
+            <parameters>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Queue URL where messages are to be fetched from. This parameter is optional and if you do not specify queueUrl you need to set in the configuration level Default Global Queue URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="read">
+            <description><![CDATA[This operation reads a number of messages from a queue.]]></description>
+            <parameters>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue.]]></description>
+                </parameter>
+                <parameter name="waitTime">
+                    <description><![CDATA[Maximum duration of a single poll, in seconds. <ul> <li> Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. <li> Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. </ul>]]></description>
+                </parameter>
+                <parameter name="maxNumberOfMessages">
+                    <description><![CDATA[Maximum number of messages to read]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="removePermission">
+            <description><![CDATA[This operation removes a permission from this message queue.]]></description>
+            <parameters>
+                <parameter name="label">
+                    <description><![CDATA[Name for the permission to be removed]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Permissions will be deleted from the queue represented by this URL.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="sendMessage">
+            <description><![CDATA[This operation sends a message to a specified queue. The message must be between 1 and 256K bytes long.]]></description>
+            <parameters>
+                <parameter name="message">
+                    <description><![CDATA[Message to send]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Queue where the message is to be sent.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="sendMessageBatch">
+            <description><![CDATA[This operation delivers up to 10 messages to the specified queue. This is a batch version of SendMessage.]]></description>
+            <parameters>
+                <parameter name="messages">
+                    <description><![CDATA[List of SendMessageBatchRequestEntry items]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[Queue where the message is to be sent.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="setQueueAttributes">
+            <description><![CDATA[This operation sets the value of one or more queue attributes, which can take up to 60 seconds to propagate throughout the SQS system (although changes made to the MessageRetentionPeriod attribute can take up to 15 minutes).]]></description>
+            <parameters>
+                <parameter name="attributes">
+                    <description><![CDATA[Map of attributes to set]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[URL of the queue.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+    </operations>
+    <sources>
+        <source name="receivemessages">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="visibilityTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="visibilityTimeoutUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="preserveMessages">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="numberOfMessages">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="queueUrl">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="waitTime">
+                    <description><![CDATA[Maximum duration of a single poll, in seconds. <ul> <li> Set this field to a value between `1` and `20` to use long polling. With long polling, if there are messages available immediately, the connector returns the query results immediately. If not, the connector waits up to the specified amount of seconds for a message to be added before returning an empty response. <li> Set this field to `0` to use short polling. With short polling, the connector always returns the query results as soon as possible, even if that means returning an empty response. </ul>]]></description>
+                </parameter>
+                <parameter name="numberOfConsumingThreads">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="primaryNodeOnly">
+                    <description><![CDATA[Whether this source should only be executed on the primary node when runnning in Cluster]]></description>
+                </parameter>
+                <parameter name="redeliveryPolicy">
+                    <description><![CDATA[Defines a policy for processing the redelivery of the same message]]></description>
+                </parameter>
+                <parameter name="frequency">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="startDelay">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="timeUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </source>
+    </sources>
+    <types>
+        <type name="org.mule.extension.sqs.api.LargePayloadSupport">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="bucket">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="messageSizeThreshold">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="messageSizeThresholdUnit">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="customS3Endpoint">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.attributes.RequestIDAttribute">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="requestId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.model.BatchResult">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="failed">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="successful">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.model.ChangeMessageVisibilityBatchRequestEntry">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="id">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="receiptHandle">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="visibilityTimeout">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.model.DeleteMessageBatchRequestEntry">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="id">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="receiptHandle">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.model.Message">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="body">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="deduplicationId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="delaySeconds">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="groupId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="id">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="messageAttributes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="receiptHandle">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+        <type name="org.mule.extension.sqs.api.model.SendMessageResult">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="MD5OfMessageAttributes">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="MD5OfMessageBody">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="messageId">
+                    <description><![CDATA[]]></description>
+                </parameter>
+            </parameters>
+        </type>
+    </types>
+</extension-documentation>

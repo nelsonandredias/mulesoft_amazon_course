@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createAmazonSQSQueue" doc:id="5932a530-9c86-4c70-b86a-3e627b5f2d0d" >
+		<http:listener doc:name="HTTP GET" doc:id="3872b812-a971-490f-be46-21617d9a68de" config-ref="HTTP_Listener_config" path="/createQueue" allowedMethods="GET"/>
+		<sqs:create-queue doc:name="Create queue" doc:id="7e51ca4f-cc19-4abf-9719-6b60a9aa54de" config-ref="Amazon_SQS_Configuration" queueName="mulesoft-test-queue"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"QueueURL": payload&#10;}]' doc:name="Set Payload Response" doc:id="df6046ff-9f59-4d82-ac21-3fbb4c858f26" />
+	</flow>
+	<flow name="sendMessagesToAmazonSQSqueue" doc:id="71b6fa9d-2e6e-4a54-88ae-6408a7dff33b" >
+		<http:listener doc:name="HTTP POST" doc:id="c0de3b3b-2ed5-43cc-8ff6-021aec1b254a" config-ref="HTTP_Listener_config" path="/sendMessage" allowedMethods="POST"/>
+		<set-variable value="#[payload]" doc:name="Set Variable messageBody" doc:id="0fcc855a-279d-42e9-add2-6fb05ab10610" variableName="messageBody"/>
+		<set-variable value='#[%dw 2.0&#10;&#10;output application/java&#10;---&#10;{&#10;	delaySeconds:0,&#10;	body: write(vars.messageBody, "application/json"),&#10;	messageAttributes:{&#10;		"Country":{&#10;			"stringValue": "Portugal",&#10;			"dataType": "String"&#10;		} as Object{&#10;			class: "org.mule.extension.sqs.api.model.MessageAttributeValue"&#10;		},&#10;		"OrderId":{&#10;			"stringValue": "34003430",&#10;			"dataType": "Number"&#10;		} as Object{&#10;			class: "org.mule.extension.sqs.api.model.MessageAttributeValue"&#10;		}&#10;	} as Object {&#10;		class: "java.util.HashMap"&#10;	}&#10;} as Object {&#10;	class: "org.mule.extension.sqs.api.model.Message"&#10;}]' doc:name="Set Variable messageQueue" doc:id="c7d46eb9-6d54-4ac1-ba0b-6f08a476fbd2" variableName="messageQueue"/>
+		<sqs:send-message doc:name="Send message" doc:id="9ce11baf-881d-4241-9a95-b795a6c55970" config-ref="Amazon_SQS_Configuration" queueUrl='#["https://sqs.eu-west-1.amazonaws.com/761925592771/mulesoft-test-queue"]'>
+			<sqs:message ><![CDATA[#[vars.messageQueue]]]></sqs:message>
+		</sqs:send-message>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="0f7899d5-0d46-4a61-98e5-c650a4d92cc5" />
+	</flow>
+	<flow name="getNumberMessagesOfAmazonSQSqueue" doc:id="f3513847-392c-4bf4-9a08-a7ba19711399" >
+		<http:listener doc:name="HTTP GET" doc:id="61a2b1e8-983d-4adf-b9ba-0f5375626c27" config-ref="HTTP_Listener_config" path="/getNumberMessages" allowedMethods="GET"/>
+		<sqs:get-approximate-number-of-messages doc:name="Get approximate number of messages" doc:id="17c7a1e6-fa41-463c-b268-04207d81dab6" config-ref="Amazon_SQS_Configuration" queueUrl='#["https://sqs.eu-west-1.amazonaws.com/761925592771/mulesoft-test-queue"]'/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"numberOfMessages": payload&#10;}]' doc:name="Set Payload Response" doc:id="942742b2-1f49-44e2-86d8-5ed59369be9a" />
+	</flow>
+	<flow name="consumeMessagesInAmazonSQS" doc:id="b213c52c-f694-4a15-a764-54487213a895" initialState="stopped">
+		<sqs:receivemessages doc:name="Receive messages" doc:id="a7824ec4-0b59-4088-b5f2-65f2e33546f0" config-ref="Amazon_SQS_Configuration" queueUrl="https://sqs.eu-west-1.amazonaws.com/761925592771/mulesoft-test-queue"/>
+		<logger level="INFO" doc:name="Log Full Message Content" doc:id="66381bc5-0449-4e10-973f-13bfc044731e" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"messageContent": payload&#10;}]'/>
+		<ee:transform doc:name="Transform Message Convert Binary Into JSON Object" doc:id="6f700a6d-bc6e-4970-b622-18c210bac99c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+output application/json
+---
+read(payload, "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Name" doc:id="f30d5c25-bf3f-4ec1-b025-7decb654c73f" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"name": payload.name&#10;}]'/>
+	</flow>
+</mule>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:dynamodb="http://www.mulesoft.org/schema/mule/dynamodb"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/dynamodb http://www.mulesoft.org/schema/mule/dynamodb/current/mule-dynamodb.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createDynamoDBTable" doc:id="ea2e0a7e-9670-4622-bbde-7051131a8c15" >
+		<http:listener doc:name="HTTP GET" doc:id="9046ee80-55c8-4cb3-8032-b804eac7d654" config-ref="HTTP_Listener_config" path="/createTable/{TABLENAME}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="f1eae614-4962-4479-b1ae-eb4943f2fe7d" variableName="tableName"/>
+		<dynamodb:create-table readCapacityUnits="5" writeCapacityUnits="5" doc:name="Create table Employees" doc:id="0a28d0a8-efbf-41a8-b4ed-187e3df1b8f4" config-ref="Amazon_DynamoDB_Configuration" tableName="#[vars.tableName]">
+			<dynamodb:attribute-definitions >
+				<dynamodb:attribute-definition attributeName="EmployeeId" attributeType="STRING" />
+				<dynamodb:attribute-definition attributeName="FirstName" attributeType="STRING" />
+			</dynamodb:attribute-definitions>
+			<dynamodb:key-schemas >
+				<dynamodb:key-schema-element attributeName="EmployeeId" keyType="HASH" />
+				<dynamodb:key-schema-element attributeName="FirstName" keyType="RANGE" />
+			</dynamodb:key-schemas>
+		</dynamodb:create-table>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "Table has been created!!!"&#10;}]' doc:name="Set Payload Response" doc:id="c0ddca08-97a6-4cbf-b178-facf7eb81004" />
+	</flow>
+	<flow name="createDynamoDBTableWithSecondaryIndexes" doc:id="c3b46c86-7617-458c-b0c0-a03052a65d6c" >
+		<http:listener doc:name="HTTP GET" doc:id="05615af2-c53b-4961-8445-6c7fea863a99" config-ref="HTTP_Listener_config" path="/createTableGSI/{TABLENAME}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="91aba30d-a9af-4300-a13c-6106c7ba2d9f" variableName="tableName" />
+		<set-variable value='#[[&#10;	{&#10;		"IndexName": "GameTitleIndex",&#10;		"Projection": {&#10;			"ProjectionType": "ALL"&#10;		},&#10;		"ProvisionedThroughput": {&#10;			"WriteCapacityUnits": 5,&#10;			"ReadCapacityUnits": 5&#10;		},&#10;		"KeySchema": [&#10;			{&#10;				"KeyType": "HASH",&#10;				"AttributeName": "GameTitle"&#10;			},&#10;			{&#10;				"KeyType": "RANGE",&#10;				"AttributeName": "TopScore"&#10;			}&#10;		]&#10;	} as Object {&#10;		class: "org.mule.extension.dynamodb.api.model.GlobalSecondaryIndex"&#10;	}&#10;]]' doc:name="Set Variable secondaryIndex" doc:id="52cccf6b-fdde-4d53-a388-665cfb02ce66" variableName="secondaryIndex"/>
+		<dynamodb:create-table readCapacityUnits="5" writeCapacityUnits="5" doc:name="Create table GameScores" doc:id="e6134771-7dbf-412b-abe2-5f2b22e845b3" config-ref="Amazon_DynamoDB_Configuration" tableName="#[vars.tableName]" globalSecondaryIndexes="#[vars.secondaryIndex]">
+			<dynamodb:attribute-definitions >
+				<dynamodb:attribute-definition attributeName="UserId" attributeType="STRING" />
+				<dynamodb:attribute-definition attributeName="GameTitle" attributeType="STRING" />
+				<dynamodb:attribute-definition attributeName="TopScore" attributeType="NUMBER" />
+			</dynamodb:attribute-definitions>
+			<dynamodb:key-schemas >
+				<dynamodb:key-schema-element attributeName="UserId" keyType="HASH" />
+				<dynamodb:key-schema-element attributeName="GameTitle" keyType="RANGE" />
+			</dynamodb:key-schemas>
+		</dynamodb:create-table>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "Table has been created!!!"&#10;}]' doc:name="Set Payload Response" doc:id="c328c5fa-b3b2-4dd9-ae31-234ab3f931a8" />
+	</flow>
+	<flow name="describeDynamoDBTable" doc:id="8b19885b-5a1a-4440-882b-6a7ddf4bc630" >
+		<http:listener doc:name="HTTP GET" doc:id="577a8991-1c09-405b-802d-6a6fa6ad9105" config-ref="HTTP_Listener_config" path="/describeTable/{TABLENAME}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="77e4496d-a04d-469b-a573-f440556482ff" variableName="tableName" />
+		<dynamodb:describe-table tableName="#[vars.tableName]" doc:name="Describe table" doc:id="971e242a-47b7-41e0-ae51-1e4c1f67c05f" config-ref="Amazon_DynamoDB_Configuration"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="b6ee0819-3867-44f1-b7d9-be35c3335e44" />
+	</flow>
+	<flow name="insertRecordDynamoDBTable" doc:id="caae32b4-c825-4d2a-86d7-094a5a70485e" >
+		<http:listener doc:name="HTTP POST" doc:id="200db5ff-7258-4e98-b2b5-053edc697d51" config-ref="HTTP_Listener_config" path="/insertRecord/{TABLENAME}" allowedMethods="POST"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="df7738bc-37fb-4426-af59-41d7c4043b44" variableName="tableName"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable partitionKey" doc:id="12a442ea-1183-40ba-b168-3e94bde240a1" variableName="partitionKey"/>
+		<set-variable value="#[payload.firstName]" doc:name="Set Variable rangeKey" doc:id="ce30d544-1ebd-4ba0-a07f-bc08e3864aaf" variableName="rangeKey"/>
+		<ee:transform doc:name="Create Item Object" doc:id="403fa955-e634-4097-8110-288e7f59c377" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+output application/json
+---
+{
+	"EmployeeId":{"S": vars.partitionKey},
+	"FirstName": {"S": vars.rangeKey},
+	"LastName": {"S": payload.lastName as String},
+	"Email": {"S": payload.email as String},
+	"Country": {"S": payload.country as String},
+	"Role": {"S": payload.role as String}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<dynamodb:put-item tableName="Employees" doc:name="Put item into Employees Table" doc:id="b0815fbe-9281-4cb0-a98c-c94db8c2dde0" config-ref="Amazon_DynamoDB_Configuration"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "New Item has been inserted into database",&#10;	"primary key": {&#10;		"partitionKey": vars.partitionKey,&#10;		"rangeKey": vars.rangeKey&#10;	}&#10;}]' doc:name="Set Payload Response" doc:id="b6b4d495-a6d2-4cc0-881c-1f8d2fad6d37" />
+	</flow>
+	<flow name="insertRecordDynamoDBTableWithSecondaryIndex" doc:id="7ec75f24-9138-48ba-8b33-c73f3b8c1261" >
+		<http:listener doc:name="HTTP POST" doc:id="21ff98e4-96b2-49de-9dc6-ddc582efaafc" config-ref="HTTP_Listener_config" path="/insertRecordGSI/{TABLENAME}" allowedMethods="POST"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="586481b6-d517-4b22-89af-cccd55fc00ee" variableName="tableName" />
+		<ee:transform doc:name="Create Item Object" doc:id="efa1d723-0a66-4edf-a7c1-2f2a29dcbb69" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+
+output application/json
+---
+{
+	"UserId": {"S": payload.userId as String},
+	"GameTitle": {"S": payload.gameTitle as String},
+	"TopScore": {"N": payload.topScore as String},
+	"Wins": {"N": payload.wins as String},
+	"Losses": {"N": payload.losses as String}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<dynamodb:put-item doc:name="Put item into GameScores Table" doc:id="cdcdb9ad-5353-443c-9aec-780b84cb65f4" config-ref="Amazon_DynamoDB_Configuration" tableName="#[vars.tableName]"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "New Item has been inserted into database"&#10;}]' doc:name="Set Payload Response" doc:id="4839a6f7-4d81-44f0-9969-a465f6d473ee" />
+	</flow>
+	<flow name="getDynamoDBItem" doc:id="637a91e6-fbef-4d1d-ba93-768a7ce6948c" >
+		<http:listener doc:name="HTTP GET" doc:id="29c370d8-3d2b-44be-abec-45e0e66331fe" config-ref="HTTP_Listener_config" path="/getItem/{TABLENAME}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="9b3a5f64-473c-4343-a54c-394a34a4ed41" variableName="tableName" />
+		<set-variable value="#[payload.partitionKey]" doc:name="Set Variable partitionKey" doc:id="d2f4d9ae-cf2c-4022-8999-702caea0f8bb" variableName="partitionKey"/>
+		<set-variable value="#[payload.rangeKey]" doc:name="Set Variable rangeKey" doc:id="2ead9d3c-0ad4-40eb-a5e9-bb4ec4e52b8a" variableName="rangeKey"/>
+		<ee:transform doc:name="Set Primary Key" doc:id="2574e37f-571d-4ba5-a7b2-b19a1132866c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+
+output application/json
+---
+{
+	"EmployeeId": {"S": vars.partitionKey},
+	"FirstName": {"S": vars.rangeKey}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="906212ae-09ae-4899-9382-e85ca75f06ed" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"tableName": vars.tableName,&#10;	"primaryKey": payload&#10;}]'/>
+		<dynamodb:get-item tableName="#[vars.tableName]" doc:name="Get item" doc:id="5e77d419-2090-4290-83b9-3a1ebabd3fe5" config-ref="Amazon_DynamoDB_Configuration">
+			<dynamodb:attributes-to-gets >
+				<dynamodb:attributes-to-get value="EmployeeId" />
+				<dynamodb:attributes-to-get value="FirstName" />
+				<dynamodb:attributes-to-get value="LastName" />
+				<dynamodb:attributes-to-get value="Email" />
+				<dynamodb:attributes-to-get value="Country" />
+				<dynamodb:attributes-to-get value="Role" />
+			</dynamodb:attributes-to-gets>
+		</dynamodb:get-item>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="92124317-0c40-4e7c-83ed-ffb77cdc198d" />
+	</flow>
+	<flow name="updateDynamoDBItem" doc:id="cb4aa57d-dc63-4a58-b61a-2653ed158867" >
+		<http:listener doc:name="HTTP POST" doc:id="18ff039e-0d2d-421c-a5a4-3f1f143afd93" config-ref="HTTP_Listener_config" path="/updateItem/{TABLENAME}" allowedMethods="POST"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="9aefb15f-b5dd-40b4-af4b-d0c8a5896572" variableName="tableName" />
+		<set-variable value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{"S": payload.newEmail}]' doc:name="Set Variable newEmail" doc:id="2f759fe6-284a-42cb-b564-4c953f0c5a1f" variableName="newEmail"/>
+		<set-variable value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{"S": payload.newRole}]' doc:name="Set Variable newRole" doc:id="a20ca03a-298b-42a5-a960-7e08559f883c" variableName="newRole" />
+		<set-variable value="#[payload.partitionKey]" doc:name="Set Variable partitionKey" doc:id="96e27ccc-53b9-4a4c-80bb-3fe94088500f" variableName="partitionKey" />
+		<set-variable value="#[payload.rangeKey]" doc:name="Set Variable rangeKey" doc:id="230b0be6-2e88-4add-9466-38511ddca739" variableName="rangeKey" />
+		<ee:transform doc:name="Set Primary Key" doc:id="2584e59a-4daa-4aa1-8251-05ba9fd62a59" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+
+output application/json
+---
+{
+	"EmployeeId": {"S": vars.partitionKey},
+	"FirstName": {"S": vars.rangeKey}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c2fa201d-c506-4efd-a144-173af9e65c48" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"tableName": vars.tableName,&#10;	"primaryKey": payload,&#10;	"newEmail": vars.newEmail,&#10;	"newRole": vars.newRole&#10;}]' />
+		<dynamodb:update-item tableName="#[vars.tableName]" doc:name="Update item" doc:id="9b0f8da3-2ddb-40a0-a155-92b1651c7133" config-ref="Amazon_DynamoDB_Configuration" returnValues="ALL_NEW" updateExpression="SET #email = :NEW_EMAIL, #role = :NEW_ROLE">
+			<dynamodb:attribute-names >
+				<dynamodb:attribute-name key="#email" value="Email" />
+				<dynamodb:attribute-name key="#role" value="Role" />
+			</dynamodb:attribute-names>
+			<dynamodb:attribute-values >
+				<dynamodb:attribute-value key=":NEW_EMAIL" value="#[vars.newEmail]" />
+				<dynamodb:attribute-value key=":NEW_ROLE" value="#[vars.newRole]" />
+			</dynamodb:attribute-values>
+		</dynamodb:update-item>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "Item has been updated"&#10;}]' doc:name="Set Payload Response" doc:id="8ba7a580-cbbb-4fe0-a672-1802b63810e6" />
+	</flow>
+	<flow name="deleteDynamoDBItem" doc:id="c2fd8b15-1900-4d28-a6d8-beee8afb1a26" >
+		<http:listener doc:name="HTTP DELETE" doc:id="2dad91c7-9565-42de-b689-bd2dac279d2d" config-ref="HTTP_Listener_config" path="/deleteItem/{TABLENAME}" allowedMethods="DELETE"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="4b0afdd4-feff-4103-a59c-675c5b6a14da" variableName="tableName" />
+		<set-variable value="#[payload.partitionKey]" doc:name="Set Variable partitionKey" doc:id="358b66a4-127e-4de0-9c27-e7c7f9d85bde" variableName="partitionKey" />
+		<set-variable value="#[payload.rangeKey]" doc:name="Set Variable rangeKey" doc:id="d956d032-698c-4416-a588-a1ad8860e8b1" variableName="rangeKey" />
+		<ee:transform doc:name="Set Primary Key" doc:id="b98633bc-f649-4a2c-bdb0-e7488703079e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+
+output application/json
+---
+{
+	"EmployeeId": {"S": vars.partitionKey},
+	"FirstName": {"S": vars.rangeKey}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="03aaab8c-031e-4518-ac54-0a4748be5d99" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"tableName": vars.tableName,&#10;	"primaryKey": payload&#10;}]' />
+		<dynamodb:delete-item tableName="#[vars.tableName]" doc:name="Delete item" doc:id="fa3dd0c4-7f4f-433f-a592-d20be931acdc" config-ref="Amazon_DynamoDB_Configuration"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": "Item has been deleted"&#10;}]' doc:name="Set Payload Response" doc:id="6a477f19-eca1-45b3-a7bc-f2ff6d96d421" />
+	</flow>
+	<flow name="getAllDynamoDBItemsWithCondition" doc:id="3d66b0e3-b9e2-4899-9fed-f00ff63b1b8f" >
+		<http:listener doc:name="HTTP GET" doc:id="1f54638f-7e69-4d53-ad86-479245601f09" config-ref="HTTP_Listener_config" path="/scanTable/{TABLENAME}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.TABLENAME]" doc:name="Set Variable tableName" doc:id="074b05e4-b091-4df4-91d6-f7b165c2a489" variableName="tableName" />
+		<set-variable value='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{"S": payload.filterRole}]' doc:name="Set Variable filterRole" doc:id="e975c661-1772-4f9a-9f29-26a8cf501485" variableName="filterRole"/>
+		<dynamodb:scan doc:name="Scan" doc:id="7e1c5cca-803a-4a1a-9756-eca6f3b05ce0" config-ref="Amazon_DynamoDB_Configuration" tableName="#[vars.tableName]" filterExpression="#role = :QUERY_ROLE">
+			<dynamodb:attribute-names >
+				<dynamodb:attribute-name key="#role" value="Role" />
+			</dynamodb:attribute-names>
+			<dynamodb:attribute-values >
+				<dynamodb:attribute-value key=":QUERY_ROLE" value="#[vars.filterRole]" />
+			</dynamodb:attribute-values>
+		</dynamodb:scan>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="06c5a106-b06b-4de2-9e6b-ad7cb85d1a3e" />
+	</flow>
+</mule>

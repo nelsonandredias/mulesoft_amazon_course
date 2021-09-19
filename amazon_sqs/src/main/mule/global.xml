@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="041b1ee2-9df6-4420-89f3-1e27c29464ce" file="config.properties" />
+	<sqs:config name="Amazon_SQS_Configuration" doc:name="Amazon SQS Configuration" doc:id="c780c08d-1f7e-4391-aded-af78fd43334b" >
+		<sqs:basic-connection accessKey="${AmazonAccessKey}" secretKey="${AmazonSecretKey}" region="eu-west-1"/>
+	</sqs:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2e038fb0-dc18-4049-9a3f-ab2b326268dd" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="4969824d-6d60-411c-b653-415ca630e92b" >
+		<s3:basic-connection accessKey="${AmazonAccessKey}" secretKey="${AmazonSecretKey}" region="EU_WEST_1" />
+	</s3:config>
+</mule>

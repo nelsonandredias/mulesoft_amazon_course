@@ -1,0 +1,31 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "java",
+    "attributes": {
+      "type": "org.mule.extension.sns.internal.extension.SNSConnector",
+      "version": "4.6.1"
+    }
+  },
+  "license": {
+    "allowsEvaluation": true
+  },
+  "name": "Amazon SNS",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "privilegedExportedPackages": [],
+      "privilegedArtifactIds": [],
+      "exportedPackages": [
+        "org.mule.extension.sns.api.attributes",
+        "org.mule.extension.sns.api.model"
+      ],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "minMuleVersion": "4.1.1"
+}

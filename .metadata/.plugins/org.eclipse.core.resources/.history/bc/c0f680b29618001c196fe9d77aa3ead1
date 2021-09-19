@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sns="http://www.mulesoft.org/schema/mule/sns" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/sns http://www.mulesoft.org/schema/mule/sns/current/mule-sns.xsd">
+	<flow name="PublishMessage" doc:id="0026eeb4-31ef-4496-9ba0-8fa225e8492e" >
+		<http:listener doc:name="HTTP POST" doc:id="36eaab64-6439-4d9e-bd8f-b833108cd07b" config-ref="HTTP_Listener_config" path="/addItemToDynamoDBTablewithSQS" allowedMethods="POST"/>
+		<set-variable value="#[payload]" doc:name="Set Variable bodyRequest" doc:id="64176141-2ad8-4c1b-8308-3b79caa5ef52" variableName="bodyRequest"/>
+		<set-variable value='#[%dw 2.0&#10;&#10;output application/java&#10;---&#10;{&#10;	delaySeconds:0,&#10;	body: write(vars.bodyRequest, "application/json")&#10;} as Object {&#10;	class: "org.mule.extension.sqs.api.model.Message"&#10;}]' doc:name="Set Variable messageQueue" doc:id="f2e9c7af-a332-43ce-8b8b-f7e7471a7e25" variableName="messageQueue" />
+		<logger level="INFO" doc:name="Log BEFORE" doc:id="56f45dc4-3f45-453c-a480-1407c4c6d31f" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"status": "before sending message",&#10;	"bodyRequest": vars.bodyRequest,&#10;	"queueURL": payload&#10;}]'/>
+		<sqs:send-message doc:name="Send message" doc:id="f873b006-be4a-4d23-8624-07c9a767d7b2" config-ref="Amazon_SQS_Configuration" queueUrl='#["https://sqs.eu-west-1.amazonaws.com/761925592771/DynamoDBQueue"]'>
+			<sqs:message ><![CDATA[#[vars.messageQueue]]]></sqs:message>
+		</sqs:send-message>
+		<logger level="INFO" doc:name="Log AFTER" doc:id="ed73c801-168f-4fb0-9c3c-bd5755fbdc95" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"status": "after sending message",&#10;	"message": payload&#10;}]' />
+		<set-payload doc:name="Set Payload Response" doc:id="be38ddb6-6ec3-44f0-a0d6-02ed6b137d4a" value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"message": "Queue has been created and message sent"&#10;}]'/>
+	</flow>
+	<flow name="ReceiveMessage" doc:id="e38c08c6-2a9e-43f8-a1dd-1f21a4760c2d" initialState="started">
+		<sqs:receivemessages doc:name="Receive messages" doc:id="aafb7757-aca2-40d0-ad27-6ef43637a8a7" config-ref="Amazon_SQS_Configuration" queueUrl='https://sqs.eu-west-1.amazonaws.com/761925592771/DynamoDBQueue'/>
+		<ee:transform doc:name="Convert Binary Into JSON Object" doc:id="9e259711-7957-409f-a042-233c1bc3d342">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+
+output application/json
+---
+read(payload, "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b48dbf2f-7891-4577-8974-da9c4083b3be" message='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"receivedMessage": payload&#10;}]'/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable partitionKey" doc:id="67c214d9-b01e-4fff-8d16-af3fc98e8135" variableName="partitionKey" />
+		<set-variable value="#[payload.message]" doc:name="Set Variable message" doc:id="fcb990ca-1a85-4841-990c-203597e7921f" variableName="message" />
+		<set-variable value="#[payload.message.application]" doc:name="Set Variable subject" doc:id="392ad10c-a729-4f64-8f89-430de37200d3" variableName="subject"/>
+		<ee:transform doc:name="Transform Message" doc:id="e31e056e-534d-47d3-afb3-9b67aa5e57e4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+output application/json
+---
+{
+    "status": "SUCCESS",
+    "message": "Object has been stored"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<sns:publish doc:name="Publish to email" doc:id="c869228d-3998-47d3-8609-b5bbed71ca59" config-ref="Amazon_SNS_configuration" subject='#[vars.subject]' topicArn='#["arn:aws:sns:eu-west-1:761925592771:ExerciseTopic"]' >
+			<sns:message ><![CDATA[#[write(payload, "application/json")]]]></sns:message>
+		</sns:publish>
+	</flow>
+</mule>

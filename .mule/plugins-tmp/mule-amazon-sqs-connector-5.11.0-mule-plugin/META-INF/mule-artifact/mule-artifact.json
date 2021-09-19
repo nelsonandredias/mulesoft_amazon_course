@@ -1,0 +1,32 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "java",
+    "attributes": {
+      "type": "org.mule.extension.sqs.internal.extension.SQSConnector",
+      "version": "5.11.0"
+    }
+  },
+  "license": {
+    "allowsEvaluation": true
+  },
+  "name": "Amazon SQS",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "privilegedExportedPackages": [],
+      "privilegedArtifactIds": [],
+      "exportedPackages": [
+        "org.mule.extension.sqs.api",
+        "org.mule.extension.sqs.api.attributes",
+        "org.mule.extension.sqs.api.model"
+      ],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "minMuleVersion": "4.1.1"
+}

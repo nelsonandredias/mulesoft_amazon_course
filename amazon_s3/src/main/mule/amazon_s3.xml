@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createBucket" doc:id="970591f1-6783-433d-bf57-f58787a3e2d4" >
+		<http:listener doc:name="HTTP GET" doc:id="2cd3c9b0-9af8-4ebf-b60f-8ddf4000535a" config-ref="HTTP_Listener_config" path="/createBucket" allowedMethods="GET"/>
+		<set-variable value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;"udemy" ++ uuid()]' doc:name="Set bucketName" doc:id="099658bb-4505-4fd3-b60b-70fd770580c0" variableName="bucketName"/>
+		<logger level="INFO" doc:name="Log bucketName" doc:id="7f0f6239-bfde-4a54-92a6-ce278889467f" message='#["bucketName ==============&gt; " ++ vars.bucketName]'/>
+		<s3:create-bucket doc:name="Create bucket" doc:id="1cb2ed7a-b1a0-4f8d-83b2-f63404db4d6c" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" region="EU_IRELAND"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload with bucketName" doc:id="cd074d47-a7ce-49f8-a261-382387ff1327" />
+	</flow>
+	<flow name="createAmazonS3Object" doc:id="ded27c6a-b2ce-4518-b40a-23d5b6e4c0c3" >
+		<http:listener doc:name="HTTP POST" doc:id="49ff7efb-ca5f-4eca-bf29-1aefc2a14de2" config-ref="HTTP_Listener_config" path="/createObject" allowedMethods="POST"/>
+		<set-variable value="#[attributes.headers.bucketName]" doc:name="Set Variable bucketName" doc:id="960c63c0-94b3-48d0-9735-0c616f4e0303" variableName="bucketName"/>
+		<set-variable value='#[%dw 2.0&#10;&#10;var nanoSecondCountOfDay = now() as String {format: "N"}&#10;&#10;output application/json&#10;---&#10;"Order/" ++ now().year ++ "/order-" ++ nanoSecondCountOfDay ++ ".json"]' doc:name="Set Variable objectKey" doc:id="98a7996f-f3f2-4f4e-a7a3-1b18baac590f" variableName="objectKey"/>
+		<logger level="INFO" doc:name="Log Data" doc:id="d2e1cea8-6d80-4f44-a231-561c15d12439" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"bucketName": vars.bucketName,&#10;	"objectKey": vars.objectKey&#10;}]'/>
+		<s3:create-object doc:name="Create object" doc:id="c10ffbd9-07a6-41dc-9d7f-15d12664cb2e" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.objectKey]" acl="PUBLIC_READ_WRITE"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload Response" doc:id="047f3a80-141d-4b11-9067-62a660d404ea" />
+	</flow>
+	<flow name="getAmazonS3Object" doc:id="610057c4-07f0-4133-969d-7ef3291bfd28" >
+		<http:listener doc:name="HTTP GET" doc:id="481d8856-adbb-4000-a0a0-4e15cd17ab91" config-ref="HTTP_Listener_config" path="/getObject" allowedMethods="GET"/>
+		<set-variable value="#[attributes.headers.bucketName]" doc:name="Set Variable bucketName" doc:id="4009312c-85d4-4f4e-82cb-c5f701e329c9" variableName="bucketName"/>
+		<set-variable value="#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;attributes.queryParams.key]" doc:name="Set Variable objectKey" doc:id="cfbf313c-d6ef-4345-b398-117186772c74" variableName="objectKey"/>
+		<logger level="INFO" doc:name="Log Data" doc:id="04a3942f-39c3-4796-b697-8f636a409300" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"bucketName": vars.bucketName,&#10;	"objectKey": vars.objectKey&#10;}]'/>
+		<s3:get-object doc:name="Get object" doc:id="b2edca27-26d3-4e12-af52-bd4af808c4a3" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[vars.objectKey]"/>
+		<ee:transform doc:name="Convert Binary Into JSON Object" doc:id="4e027a2c-c695-4fa7-8bd4-f30cd1bc1b22" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+output application/json
+---
+read(payload, "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Object Content" doc:id="00e65a00-6c1f-412c-9894-77a4192ba92d" message="#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;payload]"/>
+		<set-payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload.name&#10;}]' doc:name="Set Payload Response" doc:id="c9f0933d-d2c5-49d1-a996-23701274056b" />
+	</flow>
+	<flow name="listDeleteAmazonS3Object" doc:id="1b9c66f1-cee4-474a-b349-4bc533de024a" >
+		<http:listener doc:name="HTTP GET" doc:id="fca586d3-335b-488f-b38c-363c7f6aa8d6" config-ref="HTTP_Listener_config" path="/listdeleteObjects" allowedMethods="GET"/>
+		<set-variable value="#[attributes.headers.bucketName]" doc:name="Set Variable bucketName" doc:id="55847045-c827-470a-ab4c-d6d3e5864690" variableName="bucketName"/>
+		<s3:list-objects doc:name="List objects" doc:id="17fe4aae-bf60-4ddf-9aff-11c9b15bf9f4" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]"/>
+		<logger level="INFO" doc:name="Log Payload" doc:id="f77c4c27-5eb1-45d7-9b37-8760377a5077" message="#[payload]"/>
+		<foreach doc:name="For Each object" doc:id="3e58b296-a4ad-436e-ab06-0f53ae90256a" collection="#[payload]">
+			<logger level="INFO" doc:name="Lo Current Object" doc:id="24826ba9-9a8f-4d81-831c-21b43c5edff9" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"outputForEach": payload&#10;}]'/>
+			<s3:delete-object doc:name="Delete object" doc:id="0b687ed1-d0d1-473b-902c-59fc642bf13b" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key="#[payload.key]"/>
+		</foreach>
+		<set-payload value='#[%dw 2.0&#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"output": payload&#10;}]' doc:name="Set Payload response" doc:id="3e3c928e-f806-4253-9a5f-c1db136e6926" />
+	</flow>
+</mule>
